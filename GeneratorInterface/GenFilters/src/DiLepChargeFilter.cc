@@ -27,7 +27,6 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-//#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 
 #include <iostream>
@@ -64,7 +63,6 @@ private:
 // constructors and destructor
 //
 DiLepChargeFilter::DiLepChargeFilter(const edm::ParameterSet& iConfig)
-    //: token_(consumes<edm::HepMCProduct>(iConfig.getUntrackedParameter<edm::InputTag>("src"))) {}
     : token_(consumes<LHEEventProduct>(iConfig.getUntrackedParameter<edm::InputTag>("src"))),
       SS_(iConfig.getParameter<bool>("SS")),
       OS_(iConfig.getParameter<bool>("OS")) {}
@@ -84,20 +82,11 @@ bool DiLepChargeFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup
 
   int LepCharge = 1;
 
-  //Handle<HepMCProduct> evt;
   Handle<LHEEventProduct> evt;
   iEvent.getByToken(token_, evt);
-  //const HepMC::GenEvent* myGenEvent = evt->GetEvent();
   const lhef::HEPEUP& lheEvent = evt->hepeup();
   std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
 
-  //for (HepMC::GenEvent::particle_const_iterator p = myGenEvent->particles_begin(); p != myGenEvent->particles_end();
-  //     ++p) {
-  //  if ((*p)->status() != 1) continue;
-
-  //  if ((*p)->pdg_id()==11||(*p)->pdg_id()==13) LepCharge *= -1;
-  //  else if ((*p)->pdg_id()==-11||(*p)->pdg_id()==-13) LepCharge *= 1;
-  
   for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle )
   {
     int id = lheEvent.IDUP[idxParticle];
